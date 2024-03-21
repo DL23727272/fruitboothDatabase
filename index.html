@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Worksheet 4.5</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+	
+	<header class="container-fluid p-3 alert-secondary">
+		<h3>Subject</h3>
+		<p>Course Year & Section</p>
+	</header>
+
+    <section class="container-fluid">
+        <h4>Worksheet 5.5 Database driven Web-based Shop </h4>
+        <p><strong>Created by:</strong> Groupmembers</p>
+    </section>
+
+
+	<section>
+
+		<div class="float-left w-75">
+			<div class="row">
+				
+				<!-- Product   -->
+                
+				<div class="d-flex row m-4"  id="content"></div>
+				<!-- End of product 1 -->
+                
+
+
+			</div>
+		</div>
+
+		<!-- Add to cart -->
+		<div class="float-right w-25">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#addProduct">Add Product</button>
+					<div class="card m-1 h-100 bg-info" id="card">
+						<div class="card-header">
+							<h5 class="card-title text-white fa fa-shopping-cart">...Cart</h5>
+						</div>
+						<div class="h-75 d-flex">
+							<img id="image" class="img-fluid card-img" src="" alt="" style="margin:auto;">
+						</div>
+
+						<div class="card-body">
+							<h4 class="card-title" id="name"></h4>
+							<div id="tohide">
+								<p class="card-text" id="price"></p>
+								<input type="number" min="1" id="quantity" value="1"><span class="card-text" id="unit"></span>
+								<input type="hidden" id="price">
+								<br><br>
+								<a href="#" class="btn btn-danger">Buy</a>
+								<span class="text-xl text-white">Total: <label id="total"></label></span>
+							</div>
+						</div>
+					</div>
+				</div>
+	</section>
+
+	<footer class="conainer p3 text-center w-100">
+		<div class="float-left w-100">
+			<hr>
+			<p>Submitted to: Instructor Name</p>
+			<small>Instructor</small>
+		</div>
+	</footer>
+
+    <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="addProduct" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Add Product</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form enctype="multipart/form-data">
+                  <div class="form-group">
+                      <input type="text" name="productName" id="productName" placeholder="Enter Product Name" class="form-control">
+                  </div>
+                  <div class="form-group">
+                      <input type="text" name="productPrice" id="productPrice" placeholder="Enter Product Price" class="form-control">
+                  </div>
+                  <div class="form-group">
+                      <input type="text" name="productQuantity" id="productQuantity" placeholder="Enter Product Quantity" class="form-control">
+                  </div>
+                  <div class="form-group">
+                      <input type="text" name="productUnit" id="productUnit" placeholder="Enter Product Unit" class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <input type="file" name="image" id="productImageName" placeholder="Enter Product Image Name" class="form-control">
+                  </div>
+                  <div class="form-group">
+                     <button type="button" id="addProductButton" class="btn btn-success">Submit</button>
+                  </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+
+	<script type="text/javascript">
+
+
+        $(document).ready(function () {
+            $("#addProductButton").on('click', function () { 
+                var image = $('#productImageName').prop('files')[0];  
+                var productName = $('#productName').val();
+                var productPrice = $('#productPrice').val();
+                var productQuantity = $('#productQuantity').val();
+                var productUnit = $('#productUnit').val();
+        
+                var form_data = new FormData();                  
+                form_data.append('image', image);
+                form_data.append('productName', productName);
+                form_data.append('productQuantity', productQuantity);
+                form_data.append('productPrice', productPrice);
+                form_data.append('productUnit', productUnit);
+        
+                $.ajax({
+                    type: 'POST',
+                    url: 'addProduct.php',
+                    data: form_data,
+                    dataType: 'text',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function(data){
+                        $('#addProductButton').html('<i class="fa fa-spinner fa-spin"></i> &nbsp; Submitting...')
+                    },
+                    success: function(result){ 
+                        console.log(result);
+                
+                        if(result.trim() === 'Product inserted successfully') {
+                            $('#addProductButton').html('Submit'); // Revert button text
+                            $('#addProduct').modal('hide'); // Hide modal on success
+                            location.reload(); // Refresh the page to load updated product list
+                        } else {
+                            $('#addProductButton').html('Submit'); // Revert button text
+                            alert(result); // Show error message returned from PHP
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#addProductButton').html('Submit'); // Revert button text
+                        console.error(xhr.responseText); // Log detailed error message
+                        alert('Error: ' + xhr.responseText); // Show detailed error message
+                    }
+                });
+            });
+        });
+        
+
+
+
+			$("#tohide").hide();
+
+                $(document).on('click', '.addtocart',function() { 
+
+				var num = $(this).attr("id");
+
+				$("#name").text($("#name" + num).text());
+				var price = $("#price" + num).text();
+				var unit = $("#unit" + num).attr("name");
+
+				$("#price").text("Php " + $("#price" + num).text() + "/" + unit);
+				var image = $("#image" + num).attr("src");
+
+				
+
+				$("#image").attr("src", image)
+				$("#unit").text(unit + ("/s"));
+				$("#price").val(price);
+				$("#tohide").show();
+
+				var totals = 1 * price;
+				$("#quantity").val();
+				$("#total").html(totals + " pesos");
+
+			});	
+
+			$("#quantity").on("input", function(){
+				var quantity = $("#quantity").val();
+				var dprice = $("#price").val();
+				var total = quantity * dprice;
+				$("#total").text(total + " pesos")
+			});
+
+	
+
+loadProducts();      
+
+function loadProducts() { 
+
+    $.ajax({
+        url: 'fetchProducts.php',
+        success: function (data) { 
+            $('#content').append(data);
+            console.log(data);
+         }
+    })
+
+
+ }
+	</script>
+</body>
+</html>
